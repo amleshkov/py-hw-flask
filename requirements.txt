@@ -13,6 +13,7 @@ peewee==3.18.1
 psycopg2-binary==2.9.10
 pydantic==2.11.7
 pydantic_core==2.33.2
+PyJWT==2.10.1
 requests==2.32.4
 typing-inspection==0.4.1
 typing_extensions==4.14.0

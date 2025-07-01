@@ -18,6 +18,7 @@ class User(Model):
     login = CharField(max_length=64, null=False, unique=True)
     email = CharField(max_length=255, null=False, unique=True)
     password = CharField(max_length=60, null=False)
+    public_id = CharField(max_length=36, null=False, unique=True)
 
     class Meta:
         database = db
