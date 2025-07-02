@@ -27,7 +27,7 @@ class User(Model):
 class Advertisement(Model):
     title = CharField(max_length=255, null=False)
     description = TextField(null=False)
-    created = DateTimeField(default=datetime.now())
+    created = DateTimeField(default=datetime.now)
     user = ForeignKeyField(User, backref="advertisements")
 
     class Meta:

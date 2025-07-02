@@ -1,11 +1,13 @@
 import uuid
+import jwt
 from datetime import datetime, timedelta, timezone
 
 from bcrypt import checkpw, gensalt, hashpw
-from flask import Flask
+from flask import Flask, request
 from playhouse.shortcuts import model_to_dict
 from pydantic import ValidationError
 
+from config import SECRET_KEY
 from functions import *
 from models import Advertisement, db
 from schema import AdvertisementSchema, UserSchemaLogin, UserSchemaSignup
@@ -29,7 +31,7 @@ def post(current_user):
         return error_bad_request()
     advertisement = Advertisement(**validated_data.model_dump())
     advertisement.save()
-    return ok_created(advertisement_render(advertisement))
+    return ok_created(data)
 
 
 @app.route("/ad/<int:item_id>", methods=["GET"])
@@ -54,6 +56,23 @@ def delete(current_user, item_id):
         return error_unauthorized()
     return error_not_found()
 
+@app.route("/ad/<int:item_id>", methods=["PUT"])
+@token_required
+def put(current_user, item_id):
+    data = {**request.json, "user": current_user.get("id")}
+    try:
+        validated_data = AdvertisementSchema(**data)
+    except ValidationError:
+        return error_bad_request()
+    query = Advertisement.select().where(Advertisement.id == item_id)
+    if query.exists():
+        advertisement_user_id = query.get().user_id
+        if advertisement_user_id == current_user.get("id"):
+            query = Advertisement.update(**validated_data.model_dump()).where(Advertisement.id == item_id)
+            query.execute()
+            return ok_with_data(data)
+        return error_unauthorized()
+    return error_not_found()
 
 @app.route("/signup", methods=["POST"])
 def signup():

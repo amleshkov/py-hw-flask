@@ -1,7 +1,7 @@
 from flask import jsonify
 
 
-def ok_with_data(data, cookie):
+def ok_with_data(data, cookie=None):
     response = jsonify({"status": "ok", "data": data})
     if cookie:
         response.set_cookie(*cookie)
